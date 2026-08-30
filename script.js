@@ -39,6 +39,7 @@ const galleryData = [
   { src: 'assets/gallery-piscina.jpg', title: 'Piscina com deck', label: 'Lazer', fallback: 'Imagem da piscina' },
   { src: 'assets/gallery-churrasqueira.jpg', title: 'Churrasqueira', label: 'Convivência', fallback: 'Imagem da churrasqueira' },
   { src: 'assets/gallery-academia.jpg', title: 'Academia', label: 'Bem-estar', fallback: 'Imagem da academia' },
+  { src: 'assets/gallery-crossfit.jpg', title: 'Espaço Cross Fit', label: 'Saúde', fallback: 'Imagem do cross fit' },
   { src: 'assets/gallery-salao.jpg', title: 'Salão de festas', label: 'Convivência', fallback: 'Imagem do salão de festas' },
   { src: 'assets/gallery-playground.jpg', title: 'Playground', label: 'Família', fallback: 'Imagem do playground' },
   { src: 'assets/gallery-gourmet.jpg', title: 'Espaço Gourmet', label: 'Gastronomia', fallback: 'Imagem do espaço gourmet' },
@@ -46,8 +47,8 @@ const galleryData = [
   { src: 'assets/gallery-cinema.jpg', title: 'Sala de Cinema', label: 'Entretenimento', fallback: 'Imagem da sala de cinema' },
   { src: 'assets/gallery-brinquedoteca.jpg', title: 'Brinquedoteca', label: 'Diversão', fallback: 'Imagem da brinquedoteca' },
   { src: 'assets/gallery-quadra.jpg', title: 'Quadra Gramada', label: 'Esportes', fallback: 'Imagem da quadra' },
-  { src: 'assets/gallery-campo.jpg', title: 'Casa de Campo', label: 'Exclusivo', fallback: 'Imagem da casa de campo' },
-  { src: 'assets/gallery-crossfit.jpg', title: 'Espaço Cross Fit', label: 'Saúde', fallback: 'Imagem do cross fit' }
+  { src: 'assets/gallery-quadraareia.jpg', title: 'Quadra de Areia', label: 'Exclusivo', fallback: 'Imagem da quadra de areia' },
+  { src: 'assets/gallery-massagem.jpg', title: 'Espaço de Massagem', label: 'Saúde', fallback: 'Imagem da sala de massagem' }
 ];
 
 /* =========================================================
@@ -118,10 +119,13 @@ function renderGallery(){
   const root = document.querySelector('#gallery-slider');
   if(!root) return;
 
-  // Estilo global para imagens faltantes
-  const missingStyle = document.createElement('style');
-  missingStyle.textContent = `.gallery-slide.missing{display:grid;place-items:center;background:linear-gradient(135deg,#1d477b,#0b1730)}.gallery-slide.missing .missing-copy{position:absolute;z-index:1;color:#a9ddff;font:800 20px Montserrat;text-align:center;max-width:240px}.gallery-side .missing-copy{font-size:14px}.gallery-slide.missing:after{display:none}`;
-  document.head.appendChild(missingStyle);
+  // Estilo global corrigido (esconde o texto por padrão, exibe só se der erro)
+  if (!document.getElementById('gallery-missing-style')) {
+    const missingStyle = document.createElement('style');
+    missingStyle.id = 'gallery-missing-style';
+    missingStyle.textContent = `.missing-copy{display:none}.gallery-slide.missing{display:grid;place-items:center;background:linear-gradient(135deg,#1d477b,#0b1730)}.gallery-slide.missing .missing-copy{display:block;position:absolute;z-index:1;color:#a9ddff;font:800 20px Montserrat;text-align:center;max-width:240px}.gallery-side .missing-copy{font-size:14px}.gallery-slide.missing:after{display:none}`;
+    document.head.appendChild(missingStyle);
+  }
 
   // Prepara o contêiner para animações
   root.style.transition = 'opacity 0.25s ease-in-out';
@@ -129,7 +133,6 @@ function renderGallery(){
   updateGalleryView();
   setupGallerySwipeAndAutoplay();
 }
-
 function updateGalleryView() {
   const root = document.querySelector('#gallery-slider');
   if(!root) return;
