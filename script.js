@@ -265,18 +265,66 @@ function setupReveal(){
   }, { threshold: .12 });
   document.querySelectorAll('.reveal').forEach(el => observer.observe(el));
 }
+// Formulario de contato (supabase)
+const SUPABASE_URL = 'https://izhllinaxdtybqbvmcqb.supabase.co';
+const SUPABASE_ANON_KEY = 'sb_publishable_OvYc1OH-oxA_gk-XQ6pY5Q_L4CQfhG6';
 
+const supabaseClient = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
 function setupForm(){
-  document.querySelector('#contact-form').addEventListener('submit', e => {
+  const form = document.querySelector('#contact-form');
+  if (!form) return;
+
+  form.addEventListener('submit', async e => {
     e.preventDefault();
-    const data = new FormData(e.currentTarget);
-    const nome = data.get('nome'); 
-    const email = data.get('email'); 
-    const tel = data.get('telefone'); 
-    const msg = data.get('mensagem') || 'Quero receber mais informações sobre o Safira Condomínio Club.';
-    const subject = encodeURIComponent(`Interesse no Safira Condomínio Club — ${nome}`);
-    const body = encodeURIComponent(`Nome: ${nome}\nE-mail: ${email}\nTelefone: ${tel}\n\nMensagem:\n${msg}`);
-    window.location.href = `mailto:SEUEMAIL@DOMINIO.COM?subject=${subject}&body=${body}`;
+    
+    const data = new FormData(form);
+    const nome = data.get('nome')?.trim();
+    const email = data.get('email')?.trim();
+    const telefone = data.get('telefone')?.trim();
+    const mensagem = data.get('mensagem')?.trim();
+
+    // 1. Verificar se todos os campos obrigatórios estão preenchidos
+    if (!nome || !email || !telefone) {
+      alert('Por favor, preencha todos os campos obrigatórios (Nome, E-mail e Telefone).');
+      return;
+    }
+
+    // 2. Verificar se o e-mail possui um formato válido (contém "@", ponto, etc.)
+    // Expressão regular simples e eficiente para validação de e-mail
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    if (!emailRegex.test(email)) {
+      alert('Por favor, insira um endereço de e-mail válido (exemplo: seu@email.com).');
+      return;
+    }
+
+    const submitBtn = form.querySelector('.btn-submit');
+    const originalText = submitBtn.innerHTML;
+    
+    // Feedback visual de carregamento
+    submitBtn.disabled = true;
+    submitBtn.innerHTML = 'Enviando...';
+
+    const payload = {
+      nome: nome,
+      email: email,
+      telefone: telefone,
+      mensagem: mensagem || 'Quero receber mais informações sobre o Safira Condomínio Club.'
+    };
+
+    const { error } = await supabaseClient
+      .from('leads')
+      .insert([payload]);
+
+    if (error) {
+      alert('Ocorreu um erro ao enviar suas informações. Por favor, tente novamente.');
+      console.error('Erro Supabase:', error.message);
+    } else {
+      alert('Recebemos seu interesse! Em breve nossa equipe entrará em contato.');
+      form.reset();
+    }
+
+    submitBtn.disabled = false;
+    submitBtn.innerHTML = originalText;
   });
 }
 
