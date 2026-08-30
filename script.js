@@ -256,6 +256,18 @@ function setupNav(){
     toggle.setAttribute('aria-expanded','false');
   }));
 }
+function setupBackToTop() {
+  const backToTopBtn = document.querySelector('.footer-back');
+  if (!backToTopBtn) return;
+
+  backToTopBtn.addEventListener('click', e => {
+    e.preventDefault();
+    window.scrollTo({
+      top: 0,
+      behavior: 'smooth'
+    });
+  });
+}
 
 function setupReveal(){
   const observer = new IntersectionObserver(entries => {
@@ -333,6 +345,7 @@ document.querySelector('.modal-close').addEventListener('click', closeModal);
 document.querySelector('#image-modal').addEventListener('click', e => { if(e.target.id === 'image-modal') closeModal() });
 document.addEventListener('keydown', e => { if(e.key === 'Escape') closeModal() });
 
+
 // Init
 renderAmenities();
 renderBenefits();
@@ -342,3 +355,4 @@ setupGalleryControls();
 setupNav();
 setupReveal();
 setupForm();
+setupBackToTop();
